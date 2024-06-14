@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Distance Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            flex-direction: column;
+            text-align: center;
+            color: var(--text-color);
+        }
+        .container {
+            transition: height 0.5s ease;
+            background-color: var(--container-bg-color);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            width: 90%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+        .input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--input-border-color);
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: var(--input-bg-color);
+            color: var(--input-text-color);
+        }
+        input:focus {
+            outline: none;
+        }
+        input.valid ~ .green-line {
+            display: block;
+        }
+        .green-line {
+            display: none;
+            height: 2px;
+            background-color: green;
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            border-radius: 2px;
+        }
+        input.error {
+            border-color: red;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--button-bg-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: var(--button-bg-hover);
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: var(--result-bg-color);
+            border-radius: 5px;
+           
+            transition: max-height 3.5s ease, opacity 3.5s ease;
+          
+            overflow: hidden;
+        }
+        .green, .green-flash {
+         
+            animation: flash-green 1.5s infinite;
+        }
+        .red, .red-flash {
+            
+            animation: flash-red 1.5s infinite;
+        }
+        @keyframes flash-green {
+            0%, 100% { color: green; }
+            50% { color: var(--flash-color); }
+        }
+        @keyframes flash-red {
+            0%, 100% { color: red; }
+            50% { color: var(--flash-color); }
+        }
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--disclaimer-text-color);
+            text-align: center;
+        }
+        .description {
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .title i {
+            margin-right: 10px;
+        }
+        .checkbox-container{
+            display:flex;
+            align-items:center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .checkbox-container label {
+            margin-right: 40px;
+        }
+
+        /* Light mode colors */
+        :root {
+            --background-color: #f4f4f4;
+            --text-color: #000;
+            --container-bg-color: #fff;
+            --input-border-color: #ccc;
+            --input-bg-color: #fff;
+            --input-text-color: #000;
+            --result-bg-color: #e9ecef;
+            --disclaimer-text-color: #777;
+            --drop-down-bg-color: #ccc;
+            --button-bg-color: #007BFF;
+            --button-bg-hover: #0056b3;
+        }
+
+        /* Dark mode colors */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --text-color: #e0e0e0;
+                --container-bg-color: #1e1e1e;
+                --input-border-color: #555;
+                --input-bg-color: #333;
+                --input-text-color: #e0e0e0;
+                --result-bg-color: #2e2e2e;
+                --disclaimer-text-color: #aaa;
+                --drop-down-bg-color: #333;
+                --button-bg-color:   #333;
+                --button-bg-hover:   #145a32;
+                --footer-bg-color:   #151515;
+            }
+        }
+        /* Custom styling for Google autocomplete suggestions */
+        .pac-container {
+            background-color: var(--container-bg-color);
+            color: var(--text-color);
+        }
+        .pac-item {
+            background-color: var(--container-bg-color);
+            color: var(--text-color);
+        }
+        .pac-item:hover {
+            background-color: var(--drop-down-bg-color);
+        }
+        
+        .pac-item .pac-item-query {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        .reset-button {
+            padding: 5px 5px;
+            font-size: 14px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .reset-button:hover {
+            background-color: #464646;
+        }
+        
+    </style>
+</head>
+<body>
+   
+    <div class="error-message" id="error-message"></div>
+    <div class="container">
+        <div class="title">
+            <i class="fas fa-map-marked-alt fa-2x"></i> 
+            <h1>Distance Calculator (Beta) </h1>
+            
+        
+        </div>
+        <p>Enter the addresses of your home, office, and a client to calculate the distances between them. This app helps you determine which location is closer to the client and provides the mileage difference.</p>
+        <label for="home">Home</label>
+        <div class="input-container">
+            <input type="text" id="home" placeholder="Enter home address" >
+            <div class="green-line"></div>
+        </div>
+        <label for="client">Client</label>
+        <div class="input-container">
+            <input type="text" id="client" placeholder="Enter client pick-up address" >
+            <div class="green-line"></div>
+        </div>
+        <label for="office">Office</label>
+        <div class="input-container">
+            <input type="text" id="office" placeholder="Enter office address">
+            <div class="green-line"></div>
+        </div><div class="checkbox-container">
+            <label><input type="checkbox" id="saveHome"> Save Home</label>
+            <label><input type="checkbox" id="saveClient"> Save Client</label>
+            <label><input type="checkbox" id="saveOffice"> Save Office</label>
+             <button class='reset-button' onclick="resetAddresses()">Clear Saves</button>
+        </div>
+        <button onclick="calculateClosest()">Calculate</button>
+        
+        
+         <div class="loader" id="loader"></div>
+        <div id="result"></div>
+         
+    </div>
+    <div class="disclaimer">
+        Your address data is private and is only stored in your internet browser local data.<br> If you are having an issue with addresses saving, make sure your browser is not blocking cookies and is not set to private browsing.
+        <br> 
+        <br>
+        &copy; <span id="year"></span> All rights reserved.
+    </div>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAlLbVTOUMTrL0Hib5JU74RbHxFmP_7Do&libraries=places"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
